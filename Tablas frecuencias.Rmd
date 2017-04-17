@@ -1,0 +1,296 @@
+---
+title: "Tablas de Frecuencias"
+author: "David Sulmont"
+date: "26 de marzo de 2017"
+output:
+  slidy_presentation: default
+  ioslides_presentation: default
+  beamer_presentation:
+    theme: AnnArbor
+---
+
+## Carga de Datos
+
+Se trabajará con la encuesta de Roles de Género y Familia realizada por el IOP - PUCP en el 2012
+
+```{r, warning=FALSE, message=FALSE}
+library(foreign)
+genero12 <- read.spss("BD_genero_pe12.sav", to.data.frame = T)
+```
+
+Existen diferentes maneras de realizar tablas con R, veremos el uso de los siguientes comandos:
+
++ table
++ prop.table
++ xtabs
++ freq (Paquete descr)
+
+## Tablas con table y prop.table para variables categóricas
+
+Tablas simple de frecuencias de las variable estado civil (P22):
+
+```{r}
+table(genero12$P22)
+```
+##
+
+Si se quiere incluir los valores perdidos (NA) se usa:
+
+```{r}
+table(genero12$P22, exclude = NULL)
+```
+
+## 
+
+**Tabla en porcentajes**
+
+Para contar con una tabla en porcentajes se utiliza:
+
+```{r}
+prop.table(table(genero12$P22))*100
+```
+##
+**Ordenar los datos según la frecuencia de las categorías**
+```{r}
+tab_ecivil <- prop.table(table(genero12$P22))*100
+
+# De menor a mayor frecuencia:
+sort(tab_ecivil)
+
+# De mayor a menor frecuencia
+sort(tab_ecivil, decreasing = T)
+
+```
+
+## 
+**Exportar una tabla**
+
+Podemos exportar una tabla de frecuencias a un formato HTLM, que luego podemos trabajar en un procesador de textos o en una hoja de cálculos para su presentación en un documento académico:
+
+```{r}
+library(xtable)
+
+print(xtable(tab_ecivil, caption = "Estado civil"), type = "html", 
+      file = "tab_ecivil.html")
+```
+
+
+##
+
+![](Tab_estcivil.png)
+
+## Tablas para variables cuantitativas
+
+Veamos la edad:
+
+```{r}
+table(genero12$EDAD)
+```
+
+Cuando se tiene una variable cuantitativa con muchos valores resulta útil agruparlos en *intervalos de clase* 
+
+##
+
+Podemos agrupar los valores en grupos de 5 años, usando el comando cut:
+
+```{r}
+gedad_1 <- cut(genero12$EDAD, breaks = seq(15, 95, by = 5))
+table(gedad_1)
+```
+
+Grupos de 10 años
+
+```{r}
+gedad_2 <- cut(genero12$EDAD, breaks = seq(15, 95, by = 10))
+table(gedad_2)
+```
+##
+Grupos de amplitud variada:
+
+```{r}
+gedad_3 <- cut(genero12$EDAD, breaks = c(18, 25, 35, 50, 65, 92),
+               include.lowest = T)
+table(gedad_3)
+```
+
+## Tablas con xtabs
+
+El comando xtabs también nos sirve para realizar tablas, la sintaxis es algo diferente:
+
+```{r}
+xtabs(~P22, genero12)
+```
+##
+
+El comando prop.table también se aplica al comando xtabs:
+
+```{r}
+prop.table(xtabs(~ P22, genero12))*100
+```
+
+## PONDERACIÓN DE DATOS
+
+![](muestra_enaho2.png) 
+
+##
+
+
+```{r, warning=FALSE, message=FALSE}
+enaho15m1 <- read.spss("Enaho01-2015-100.sav", to.data.frame = T)
+```
+Datos sin ponderar:
+
+```{r}
+xtabs(~ DOMINIO, enaho15m1)
+```
+
+##
+
+Datos ponderados:
+
+```{r}
+xtabs(FACTOR07 ~ DOMINIO, enaho15m1)
+```
+
+## Importancia del factor de ponderación: Estimado de la Pobreza en la ENAHO
+
+
+```{r, warning=FALSE, message=FALSE}
+enaho15sum <- read.spss("SUMARIA-2015.sav", to.data.frame = T)
+#Sin ponderar
+prop.table(xtabs(~ POBREZA, enaho15sum))*100
+#Ponderado
+prop.table(xtabs(FACTOR07 ~ POBREZA, enaho15sum))*100
+```
+
+## Tablas con comando freq del paquete descr
+
+```{r}
+library(descr)
+# Sin ponderar
+freq(enaho15sum$POBREZA, plot = F)
+#Ponderado
+freq(enaho15sum$POBREZA,enaho15sum$FACTOR07, plot = F)
+```
+
+## Tabulaciones cruzadas o tablas de contingencia
+
+Antes de hacer una tabulación cruzada debemos:
+
++ Especificar cuál es nuestra *variable de análisis*, aquella cuya distribución de valores o categorías nos interesa describir.
++ Especificar cuál es nuestra *variable de control* o *variable independiente*, aquella que nos sirve para comparar la distribución de nuestra variable de análisis entre diferentes grupos definidos por nuestra variable de control.
++ Considerar cómo deben calcularse los porcentajes: los porcentajes de la *variable de análisis* deben calcularse para cada categoría de nuestra *variable de control*
+
+## Tabulación cruzada con el comando table
+
+Opinión sobre quién debe cuidar a los miembros de la familia enfermos:
+
+**table(var_fila, var_columna)**
+
+```{r}
+tab_cruz1 <- table(genero12$P35C, genero12$SEXO)
+tab_cruz1
+```
+
+##
+
+El comando prop.table nos permite calcular las proporciones de tres maneras diferentes:
+
++ prop.table(table(y,x)) : cada celda expresa la proporción sobre el total de casos de la tabla.
++ prop.table(table(y,x), **1**): cada celda expresa la proporción de sobre el total de casos de la FILA.
++ prop.table(table(y,x), **2**): cada celda expresa la proporción sobre el total de casos de la COLUMNA.
+
+##
+
+En el caso de la tabla **tab_cruz1**, la forma correcta de calcular la proporción sería:
+
+```{r}
+prop.table(tab_cruz1, 2)*100
+```
+
+## Tabulación cruzada con el comando xtabs
+
+```{r}
+prop.table(xtabs(~ P35C + SEXO, genero12), 2)*100
+```
+
+## 
+
+La ventaja del comando xtabs es que nos permite calcular una tabla cruzada tomando en cuenta el factor de expansión o de ponderación de una base de datos. Ejemplo con la ENAHO:
+
+```{r}
+prop.table(xtabs(FACTOR07 ~ DOMINIO + POBREZA, enaho15sum), 1)*100
+```
+
+Obsérvese que en este caso los porcentajes se han calculado para cada FILA, porque es ahí donde están ubicadas las categorías de la variable de control o variable independiente.
+
+## Tablas bien presentadas para ser incluídas en un documento académico:
+
+Cuando se presentan las tablas en un documento académico es importante incluir, además de las celdas cruzadas, las celdas *marginales*. Las celdas marginales corresponden al total de las filas y de las columnas, con los porcentajes calculados en el sentido correspondiente, es decir dependiendo de dónde están ubicadas las variables de análisis y de control: en las filas o en las columnas. Es importante que la tabla que se presenta proporcione la información sobre el total de casos sobre el cual se calculan los porcentajes.
+
+En el R, incluir las celdas marginales puede ser algo complejo, para facilitar este procedimiento se ha creado la función "tab_cruzada" que se presenta en la siguiente diapositiva. 
+
+Para usar esta función lo primero que se requiere es elaborar una tabla de frecuencias observadas (sólo conteos), ya sea utilizando las funciones table o xtabs, luego el comando funciona de la siguiente manera:
+
++ **tab_cruzada(tabla)**: Si se quiere una tabla cruzada de conteos que incluya las celdas marginales.
++ **tab_cruzada(tabla, pc="col")**: Si se quiere que la tabla calcule los % para cada columna
++ **tab_cruzada(tabla, pc="fila")**: Si se quiere que la tabla calcule los % para cada fila
+
+## Función para tablas de frecuencias cruzadas: tab_cruzada
+
+```{r}
+tab_cruzada <- function(tabla, pc="s"){
+  tab.0 <- tabla
+  if(pc=="s"){
+    tab.1 <- addmargins(tab.0, 1, FUN = list(list(TOTALc = sum)))
+    tab.1 <- addmargins(tab.1, 2, FUN = list(list(TOTALf = sum)))
+    return(tab.1)}
+  if (pc=="col"){
+    tab.2 <- addmargins(tab.0, 2, FUN = list(list(TOTAL = sum)))
+    tab.2 <- round(prop.table(tab.2, 2)*100,2)
+    tab.2 <- round(addmargins(tab.2, 1, FUN = list(list(TOTAL = sum))),1)
+    tab.0 <- tab.0
+    tab.0 <- addmargins(tab.0, 2, FUN = list(list(TOTAL = sum)))
+    tab.0 <- addmargins(tab.0, 1, FUN = list(list(Nvalid = sum)))
+    tab.2 <- rbind(tab.2, tail(tab.0, 1))
+    return(tab.2)}
+  if (pc=="fila"){
+    tab.2 <- addmargins(tab.0, 1, FUN = list(list(TOTAL = sum)))
+    tab.2 <- round(prop.table(tab.2, 1)*100,2)
+    tab.2 <- round(addmargins(tab.2, 2, FUN = list(list(TOTAL = sum))),1)
+    tab.0 <- tab.0
+    tab.0.1 <- addmargins(tab.0, 1, FUN = list(list(TOTAL = sum)))
+    tab.0.1 <- addmargins(tab.0.1, 2, FUN = list(list(Nvalid = sum)))
+    tab.2 <- cbind(tab.2, Nvalid=tab.0.1[, "Nvalid"])
+    return(tab.2)}
+}
+```
+
+## Uso de la función tab_cruzada
+
+```{r}
+tabla1 <- table(genero12$P35C, genero12$SEXO)
+tabla1
+```
+##
+
+```{r}
+tab_cruzada(tabla1)
+```
+
+```{r}
+tab_cruzada(tabla1, pc="col")
+```
+##
+```{r}
+tabla2 <- xtabs(FACTOR07 ~ DOMINIO + POBREZA, enaho15sum)
+tab_cruzada(tabla2, pc="fila")
+```
+##
+
+![](Tab_cruz_iop.png) 
+
+##
+
+![](tab_cruz_pobreza_enaho.png) 
+

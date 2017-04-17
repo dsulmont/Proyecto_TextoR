@@ -1,0 +1,140 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+En este capítulo veremos algunas de las principales herramientas para el análisis estadístico descriptivo, específicamente:
+
+\begin{enumerate}
+  \item Tablas de frecuencias
+  \begin{enumerate}
+  \item Tablas de frecuencias simples
+  \item Tablas de frecuencias cruzadas
+  \end{enumerate}
+  \item Resúmenes estadísticos descriptivos
+  \begin{enumerate}
+  \item Medidas de tendencia central: Moda, Mediana y Media
+  \item Medidas de orden o posición: Cuantiles, Percentiles, Cuartiles
+  \item Medidas de dispersión: Rango, Desviación Estándar y Rango Intercuartil
+  \end{enumerate}
+\end{enumerate}
+
+\section{Tablas de frecuencias simples}
+
+Como su nombre lo indica, las tablas de frecuencias nos muestra cómo están distribuidos los valores o categorías de una variable. Una tabla de frecuencias simple para una variable \textit{categórica nominal} debe contener la siguiente información:
+
+\begin{itemize}
+  \item El nombre de la variable en el título.
+  \item Las categorías de la variable que se están analizando.
+  \item Las frecuencias absolutas o conteos de cada categoría.
+  \item Las frecuencias relativas, en porcentajes, de cada categoría.
+  \item Notas sobre el origen y la fuente de los datos, así como sobre la elaboración de la tabla en el pie de la misma.
+\end{itemize}
+
+En la tabla \ref{tab:ecivil} se muestra un ejemplo de cómo presentar una tabla de frecuencias simples de una variable categórica nominal.
+
+\begin{table}[htbp]
+\caption{Estado civil de los entrevistados}
+\label{tab:ecivil}
+\begin{center}
+\begin{tabular}{lrr}
+  \hline
+Estado Civil & Frecuencia & \% \\ 
+  \hline
+Casado/a & 401 & 33.30 \\ 
+  Conviviente & 305 & 25.40 \\ 
+  Viudo/a &  49 & 4.10 \\ 
+  Divorciado/a &  13 & 1.10 \\ 
+  Separado/a &  71 & 5.90 \\ 
+  Soltero/a & 364 & 30.30 \\ 
+   \hline
+   TOTAL & 1,203 & 100.00\\
+   \hline
+\end{tabular}
+\\Fuente: Encuesta Nacional sobre Familia y Roles del Género 2012, IOP-PUCP\\
+Elaboración propia.
+\end{center}
+\end{table}
+
+Cuando la variable que estamos analizando es ordinal o intervalar, además de las frecuencias absolutas o conteos y los porcentajes de cada categoría, también se suele incluir las frecuencias acumuladas, como se aprecia en la tabla \ref{tab:nivedu} y \ref{tab:hijos}. Estas últimas nos permiten realizar afirmaciones del tipo "55.2 \% de los entrevistados tienene niveles educativos iguales o inferiores a los de secundaria completa". 
+
+
+\begin{table}[htbp]
+\caption{Nivel educativo de los entrevistados}
+\label{tab:nivedu}
+\begin{center}
+\begin{tabular}{lrrrr}
+  \hline
+Nivel Educativo & Frecuencia & \% & Frec. Acum. & \% Acum. \\ 
+  \hline
+Ninguno &  28 & 2.33 &  28 & 2.33 \\ 
+  Inicial o primaria incompleta &  61 & 5.07 &  89 & 7.40 \\ 
+  Primaria completa & 101 & 8.40 & 190 & 15.81 \\ 
+  Secundaria incompleta & 121 & 10.07 & 311 & 25.87 \\ 
+  Secundaria completa & 353 & 29.37 & 664 & 55.24 \\ 
+  Superior técnica incompleta & 107 & 8.90 & 771 & 64.14 \\ 
+  Superior técnica completa & 158 & 13.14 & 929 & 77.29 \\ 
+  Superior universitaria incompleta & 118 & 9.82 & 1,047 & 87.10 \\ 
+  Superior universitaria completa & 127 & 10.57 & 1,174 & 97.67 \\ 
+  Post grado &  28 & 2.33 & 1,202 & 100.00 \\ 
+   \hline
+   TOTAL & 1,202 & 100.00 & & \\
+   \hline
+\end{tabular}
+\\Fuente: Encuesta Nacional sobre Familia y Roles del Género 2012, IOP-PUCP
+\\Elaboración propia.
+\end{center}
+\end{table}
+
+\begin{table}[ht]
+\begin{center}
+\caption{Número de hijos menores de edad que tienen los entrevistados}
+\label{tab:hijos}
+\begin{tabular}{crrrr}
+  \hline
+Número de hijos & Frecuencia & \% & Frec. Acum. & \% Acum. \\ 
+  \hline
+0 & 622 & 51.70 & 622 & 51.70 \\ 
+  1 & 226 & 18.79 & 848 & 70.49 \\ 
+  2 & 232 & 19.29 & 1,080 & 89.78 \\ 
+  3 &  89 & 7.40 & 1,169 & 97.17 \\ 
+  4 &  24 & 2.00 & 1,193 & 99.17 \\ 
+  5 &   7 & 0.58 & 1,200 & 99.75 \\ 
+  6 &   2 & 0.17 & 1,202 & 99.92 \\ 
+  9 &   1 & 0.08 & 1,203 & 100.00 \\ 
+   \hline
+TOTAL & 1,203 & 100.00 & & \\
+\hline
+\end{tabular}
+\\Fuente: Encuesta Nacional sobre Familia y Roles del Género 2012, IOP-PUCP
+\\Elaboración propia.
+\end{center}
+\end{table}
+
+Cuando una variable de intervalo tiene un amplio rango de valores, hacer una tabla de frecuencias de valores simples puede ser poco práctico para presentar los datos. En estos casos lo que se debe hacer es agrupar los valores en intervalos de clase, como se explicó en la sección sobre recodificación de variables del capítulo anterior. En la tabla \ref{tab:gedad} se muestra el resultado de este procedimiento.
+
+\begin{table}[ht]
+\begin{center}
+\caption{Grupos de edad de los entrevistados}
+\label{tab:gedad}
+\begin{tabular}{lrrrr}
+  \hline
+Grupos de edad & Frecuencia & \% & Frec. Acum. & \% Acum. \\ 
+\hline
+[18,25] & 288 & 23.94 & 288 & 23.94 \\ 
+  (25,35] & 283 & 23.52 & 571 & 47.46 \\ 
+  (35,50] & 363 & 30.17 & 934 & 77.64 \\ 
+  (50,65] & 182 & 15.13 & 1,116 & 92.77 \\ 
+  (65,92] &  87 & 7.23 & 1,203 & 100.00 \\ 
+   \hline
+TOTAL & 1,203 & 100.00 & & \\
+\hline
+\end{tabular}
+\\Fuente: Encuesta Nacional sobre Familia y Roles del Género 2012, IOP-PUCP
+\\Elaboración propia.
+\end{center}
+\end{table}
+
+
+
+\end{document}

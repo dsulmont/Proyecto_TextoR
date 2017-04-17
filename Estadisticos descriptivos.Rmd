@@ -1,0 +1,264 @@
+---
+title: "Estadísticos Descriptivos"
+author: "David Sulmont"
+date: "27/3/2017"
+output: slidy_presentation
+---
+
+## Estadísticos de tendencia central
+
+Indican los valores centrales o alrededor de los cuales se concentra la mayor parte de los casos de una distribución.
+
++ **La moda** (Mo): Es el valor o la categoría más frecuente de una variable, aplica a cualquier tipo de variables.
++ **La mediana** (Md): Es el valor o categoría que, en una distribución ordenada, divide en dos mitades a una distribución. Aplica sólo para variables ordinales o de intervalo.
++ **La media** ($\bar{x}$): Es la suma de todos los valores de la variable, divida por el número de casos. Aplica sólo para variables de intervalo. 
+$$\bar{x} = \frac{\sum_{i=1}^{n}x_{i}}{n}$$
+
+## La moda
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+library(foreign)
+genero12 <- read.spss("BD_genero_pe12.sav", to.data.frame = T)
+save(genero12, file="genero12.Rda")
+load("genero12.Rda")
+```
+
+
+```{r}
+table(genero12$P22)
+table(genero12$P32, genero12$SEXO)
+```
+
+##
+Edad del entrevistado:
+```{r}
+table(genero12$EDAD)
+```
+
+##
+```{r}
+table(cut(genero12$EDAD, breaks = seq(15, 95, by=5)))
+table(cut(genero12$EDAD, breaks = seq(15, 95, by=10)))
+```
+
+## La mediana
+
+Edad ideal para que un hombre se case:
+
+```{r}
+library(descr)
+freq(ordered(genero12$P2), plot=F)
+```
+
+
+##
+
+```{r}
+# Edad ideal para que un hombre se case:
+median(genero12$P2, na.rm=T)
+
+# Edad ideal para que una mujer se case
+median(genero12$P1, na.rm=T)
+```
+## La media
+
+```{r}
+# Edad promedio del entrevistado
+mean(genero12$EDAD)
+# Media de la edad ideal para que una mujer se case
+mean(genero12$P1, na.rm=T)
+# Media de la edad ideal para que un hombre se case
+mean(genero12$P2, na.rm=T)
+# Media de la edad en que el entrevistado se casó o empezó a convivir
+mean(genero12$P23, na.rm=T)
+```
+
+## Estadísticos de orden o posición: Cuantiles
+
+Un cuantil es un valor de una variable, que en una distribución ordenada de la misma, indica una proporción determinada de casos por debajo o por encima de ese valor.
+
+Por ejemplo, el cuantil 0.5 corresponde a la mediana, por debajo o por encima de ese valor está el 50% de los casos de una distribución.
+
+Algunos cuantiles tienen nombres especiales:
+
++ Percentiles: dividen a una distribución en 100 partes con la misma cantidad de casos.
++ Deciles: dividen a una distribución en 10 partes con la misma cantidad de casos.
++ Cuartiles: dividen a una distribución en 4 partes con la misma cantidad de casos.
++ Quintiles: dividen a una distribución en 5 partes con la misma cantidad de casos.
+
+## Cuantiles con tablas de frecuencias acumuladas
+
+```{r}
+freq(ordered(genero12$P2), plot=F)
+```
+
+## Comando **quantile**
+
+Para pedir deciles de la edad ideal para casarse:
+
+```{r}
+# Para las mujeres
+quantile(genero12$P1, probs = seq(0, 1, 0.1), na.rm = T)
+# Para los hombres
+quantile(genero12$P2, probs = seq(0, 1, 0.1), na.rm = T)
+```
+
+##
+
+Solicitar cuartiles
+```{r}
+quantile(genero12$P1, probs = seq(0, 1, 0.25), na.rm = T)
+quantile(genero12$P2, probs = seq(0, 1, 0.25), na.rm = T)
+```
+
+Percentiles específicos:
+
+```{r}
+quantile(genero12$P1, probs = c(.33, .65, .95), na.rm = T)
+```
+
+## Medidas de dispersión
+
+Las medidas de dispersión nos indican qué tanto varían los valores de una variable cuantitativa. Las medidas de dispersión más utilizadas son:
+
++ El rango: La diferencia entre el valor máximo y el valor mínimo de una variable
++ El rango intercuartil: La diferencia entre el percentil 75 y el percentil 25. Nos indica el rango de valores del 50% de los casos que están "al medio" de la distribución.
++ La desviación estándar o desviación típica:
+
+$$s = \sqrt{\frac{\sum_{i=1}^n(x_i - \bar{x})^2}{n-1}}$$
+
+## El rango
+
+```{r}
+range(genero12$P1, na.rm=T)
+range(genero12$P2, na.rm=T)
+```
+
+## El rango intercuartil
+
+```{r}
+quantile(genero12$P1, probs = seq(0, 1, 0.25 ), na.rm=T)
+IQR(genero12$P1, na.rm=T)
+quantile(genero12$P2, probs = seq(0, 1, 0.25 ), na.rm=T)
+IQR(genero12$P2, na.rm=T)
+```
+## La desviación estándar
+
+```{r}
+sd(genero12$P1, na.rm=T)
+sd(genero12$P2, na.rm=T)
+```
+## Función summary
+
+La función summarize nos permite obtener un conjunto de estadísticos descriptivos de una variable cuantitativa:
+
+```{r}
+summary(genero12$P1)
+summary(genero12$P2)
+```
+
+## Estadísticos descriptivos por grupo
+
+Hay varias opciones para solicitar estadísticos descriptivos por grupos, por ejemplo el número de horas dedicadas a tareas domésticas según el sexo del entrevistado. Veremos las siguientes opciones:
+
++ La funcion **summaryBy** del paquete **doBy**
++ La función **describeBy** del paquete **psych**
++ La función **summarySE** del paquete **Rmisc**
+
+## Estadísticos descriptivos por grupo con **summaryBy**
+
+La función **summaryBy** nos permite generar un data frame con estadísticos descriptivos por grupo, especificando la lista de estadísticos que deseamos obtener. En el siguiente ejemplo se crea un data frame llamado "sum1", donde pediremos la media y la mediana; los percentiles 25 y 75; el mímimo y el máximo; la desviación estándar. Podemos incluir otros estadísticos descriptivos en la lista según nuestras necesidades.
+
+```{r}
+library(doBy)
+sum1 <- summaryBy (P1 ~ SEXO, data = genero12,
+           FUN = function(x) { c(m = mean(x, na.rm = T), 
+                                 md = median(x, na.rm = T),
+                                 p = quantile(x, probs = .25, na.rm = T),
+                                 p = quantile(x, probs = .75, na.rm = T),
+                                 min = min(x, na.rm = T),
+                                 max = max(x, na.rm = T),
+                                 s = sd(x, na.rm = T))})
+sum1
+```
+
+
+
+## 
+La función **summaryBy** nos permite agrupar los casos por más de un grupo, por ejemplo, sexo y grupo de edad. En este ejemplo estamos pidiendo el número de casos válidos, y la DIQ, pero ya no los cuartiles:
+
+```{r}
+sum2 <- summaryBy (P1 ~ SEXO + GEDAD, data = genero12,
+           FUN = function(x) { c(m = mean(x, na.rm = T), 
+                                 md = median(x, na.rm = T),
+                                 min = min(x, na.rm = T),
+                                 max = max(x, na.rm = T),
+                                 DIQ = IQR(x, na.rm =T),
+                                 s = sd(x, na.rm = T),
+                                 N = sum(!is.na(x)))})
+sum2
+```
+
+## 
+
+Con summaryBy también es posible pedir los estadísticos descriptivos de más de una variable de análisis:
+```{r}
+sum3 <- summaryBy (P1 + P2 ~ SEXO + GEDAD, data = genero12,
+           FUN = function(x) { c(m = mean(x, na.rm = T), 
+                                 s = sd(x, na.rm = T),
+                                 N = sum(!is.na(x)))})
+sum3
+```
+
+
+## Estadísticos descriptivos por grupo con **describeBy**
+
+La función **describeBy** arroja un conjunto de estadísticos pre definidos:
+
++ El número de casos válido (n).
++ La media (mean).
++ La desviación estándr (sd).
++ La mediana (median).
++ La media recortada (trimmed): calcula la media pero excluyendo el 5% de casos con menores y mayores valores, permite descatar aquellos casos que pueden influir más en la media (los valores extremos).
++ La desviación mediana absoluta (mad): es una medida análoga a la desviación estándar, pero usando diferencias absolutas entre los valores y la mediana.
++ Los valores mínimo (min) y máximo (max) y el rango (range).
++ El sesgo (skew) y la kurtoris, que tienen que ver con el análisis de la normalidad de una distribución (tema a ver más adelante en el curso).
++ El error estándar de la media (se): tiene que ver con los procedimientos de inferencia estadística que veremos más adelante en el curso.
+
+##
+
+Edad ideal para que una mujer se case, según sexo:
+
+```{r}
+library(psych)
+describeBy(genero12$P1, genero12$SEXO)
+```
+
+## 
+
+Edad ideal para que una mujer se case, según sexo y grupo de edad:
+
+```{r}
+describeBy(genero12$P1, list(genero12$SEXO, genero12$GEDAD))
+
+```
+
+## Estadísticos descriptivos por grupo con **summarySE**
+
+La función **summarySE** arroja como resultado el número válido de casos, la media, la desviación estándar, el error estándar de la media (se), y el intervalo de confianza de la media al 95%. Estos dos últimos estadísticos serán explorados con mayor profundidad en próximas sesiones del curso.
+
+```{r}
+library(Rmisc)
+summarySE(data = genero12, measurevar = "P1", groupvars = "SEXO", na.rm = T)
+```
+
+## 
+
+Con **summarySE** también se pueden combinar grupos formados por más de una variable:
+
+```{r}
+summarySE(data = genero12, measurevar = "P1", 
+          groupvars = c("SEXO", "GEDAD"), na.rm = T)
+
+```
+
