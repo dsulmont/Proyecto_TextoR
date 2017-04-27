@@ -135,6 +135,118 @@ TOTAL & 1,203 & 100.00 & & \\
 \end{center}
 \end{table}
 
+\subsection{Tablas de frecuencias con la función \texttt{table}}
+
+<<echo=F>>=
+load("genero12.rda")
+@
+
+El comando \texttt[table] sirve para producir tablas de frecuencias absolutas. Para solicitar una tabla de frecuencias de la variable "estado civil" de la encuesta de Familia y Roles de Género, se emplea la siguiente sintaxis:
+
+<<results=tex>>=
+table(genero12$P22)
+@
+
+Con el comando \texttt{prop.table} se convierte una tabla de frecuencias en una de proporciones:
+
+<<>>=
+prop.table(table(genero12$P22))
+@
+
+Si se quiere que las frecuencias se expreses en porcentajes, simplemente se multiplica por 100 la tabla creada con \texttt{prop.table}:
+
+<<>>=
+prop.table(table(genero12$P22))*100
+@
+
+Al asignarle un nombre, una tabla puede almacenarse en la memoria de R como un objeto de tipo tabla:
+
+<<>>=
+tabla_ecivil <- prop.table(table(genero12$P22))*100
+tabla_ecivil
+@
+
+\subsection{Tablas de frecuencias con la función \texttt{xtabs}}
+
+El comando \texttt{xtabs} también genera tablas de frecuencias similares a \texttt{table}, pero con una sintaxis ligeramente distinta:
+
+<<>>=
+tabla_educ <- xtabs(~ P48, data = genero12)
+tabla_educ
+@
+
+El comando \texttt{prop.table} también puede emplearse en una tabla creada con \texttt{xtabs}:
+
+<<>>=
+prop.table(tabla_educ)*100
+@
+
+La ventaja del comando \texttt{xtabs} es que pueden crearse tablas ponderando los casos si es que la base de datos tiene un factor de expansión o de ponderación, como se detalla en la siguiente sección.
+
+\subsection{Diseño muestral y ponderación de datos}
+
+Muchos estudios sociales realizados sobre la base de encuestas suelen tener diseños muestrales complejos, por ejemplo muestras polietápicas que consieran muestreo de estratos y por conglomerados.\footnote{Sobre diseños muestrales ver: XXX} En este tipo de diseños, la distribución de las unidades seleccionadas en la muestra entre los distintos estratos o conglomerados no necesariamente coincide con la distribución de las unidades en la población, ya que si la distribución de la muestra fuera estrictamente proporcional a la distribución del universo o población objetivo, algunos estratos podrían tener mucho más información de la necesaria para lograr niveles adecuados de representativad, en detrimento de otros estratos. 
+
+Para ilustrar esta situación tomaremos como ejemplo los datos de la Encuesta Nacional de Hogares (ENAHO) que realiza el Instituto Nacional de Estadística e Informática (INEI) del Perú todos los años. En este caso utilizaremos el Módulo 1 de la ENAHO 2015 que registra la información de las viviedas de los hogares encuestados ese año y que puede descargarse gratuitamente en la página web del INEI: (PONER WEB).\footnote{Junto con la base de datos también se descarga la ficha técnica y el cuestionario que nos puede servir como libro de códigos.} Los datos pueden descargarse en formato SPSS, por lo que es necesario importarlos al R:
+
+<<>>=
+library(foreign)
+enaho15_1 <- read.spss("Enaho01-2015-100.sav", to.data.frame = T)
+length(enaho15_1$DOMINIO)
+@
+
+Una de las variables de la ENAHO es el dominio geográfico, que registra los ocho grandes estratos geográficos entre los que se distribuyen los 39,863 hogares que fueron seleccionados en la muestra del 2015.
+
+<<>>=
+length(enaho15_1$DOMINIO)
+xtabs(~ DOMINIO, data = enaho15_1)
+@
+
+Como puede verse, en la Selva se entrevistaron 8323 hogares, mientras que en Lima Metropolitana (que como estrato muestral incluye al Callao) fueron 5,101 hogares. Esta distribución muestral no corresponde con la distribución de hogares en universo, ya que Lima Metropolitana concentra un 32.4\% de los hogares del país, mientras que los hogares entrevistados en este estrato reprentan un 12.8\% de los hogares de la muestra; en cambio, la muestra de hogares de la Selva representa 20\% del total de la muestra, cuando en este estrato geográficos vive el 11.4\% de los hogares del país.
+
+Esta despropoción entre la distribución muestral y la distribución poblacional de los hogares se debe a decisiones metodológicas del diseño muestral que buscan optimizar la cantidad de información necesaria para representar determinados grupos o estratos poblacionales. Si bien el estrato ``Selva'' es demográficamente menos importante que ``Lima Metropolitana'', comprende realidades bastante diversas (selva alta / baja; norte / centro / sur; zonas urbanas y rurales), para poder estudiarlas adecuadamente se requiere entonces un tamaño muestral más grande que un estrato algo más homogéneo (en términos relativos) como el de Lima.
+
+Las diferencias entre la distribución poblacional y muestral de los estratos puede apreciarse con mayor claridad en la tabla \ref{tab:enaho1}. Las dos primeras columnas de datos nos muestran la distribución de los hogares por estrato en la población total (según el censo del 2007\footnote{El INEI utiliza los datos censales para realizar sus ajustes muestrales}); las dos columnas siguientes nos muestran la distribución de la muestra. La última columna nos indica cuantos hogares del universo o población objetivo son representados por un hogar seleccionado en la muestra, así, en promedio, un hogar encuestado en la ENAHO representa a 268.2 hogares de la población, sin embargo esa representación varía según los dominios: un hogar encuestado en Lima representa a 679.4 hogares de ese estrato o dominio; un hogar de la muestra en la selva representa a 146.3 hogares en de la población de ese dominio.
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[ht]
+\centering
+\caption{ENAHO 2015: Distribución de la Población y de la Muestra de Hogares por Dominio Geográfico}
+\label{tab:enaho1}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrc}
+                   & \multicolumn{2}{l}{Distribución Población}          & \multicolumn{2}{l}{Distribución Muestra}           & \multicolumn{1}{l}{Representatividad} \\
+Dominios           & \multicolumn{1}{c}{Tamaño} & \multicolumn{1}{c}{\%} & \multicolumn{1}{c}{Tamaño} & \multicolumn{1}{c}{\%} & de la muestra                         \\ \hline
+Costa Norte        & 1,474,359                  & 13.8                   & 5,190                      & 13.0                   & 284.1                                 \\
+Costa Centro       & 666,837                    & 6.2                    & 3,168                      & 7.9                    & 210.5                                 \\
+Costa Sur          & 243,836                    & 2.3                    & 2,334                      & 5.9                    & 104.5                                 \\
+Sierra Norte       & 643,568                    & 6.0                    & 2,328                      & 5.8                    & 276.4                                 \\
+Sierra Centro      & 1,337,508                  & 12.5                   & 7,303                      & 18.3                   & 183.1                                 \\
+Sierra Sur         & 1,641,742                  & 15.4                   & 6,114                      & 15.3                   & 268.5                                 \\
+Selva              & 1,217,600                  & 11.4                   & 8,325                      & 20.9                   & 146.3                                 \\
+Lima Metropolitana & 3,465,578                  & 32.4                   & 5,101                      & 12.8                   & 679.4                                 \\ \hline
+TOTAL              & 10,691,026                 & 100.0                  & 39,863                     & 100.0                  & 268.2                                 \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+El datos sobre la representatividad de la muestra se utiliza ya sea para expandir o ponderar los casos de la base de datos y de esta forma estimar los totales generales para toda la población a partir de los datos muestrales. Cuando lo que se busca es \textit{expandir} los datos, se multiplica el número de casos de la muestra por el \textit{factor de expansión}, es decir por la cantidad de hogares del universo o población objetivo que son representados por un hogar de la muestra. Otra posibilidad es \textit{ponderar} la muestra, que implica multiplicar la cantidad de casos de la muestra por la proporción de la población que su estrato específico representa. Así por ejemplo, si lo que se quiere es expandir los datos del dominio o estato "Selva", cada caso debe multiplicarse por 146.3; si por el contrario se busca ponderar esos mismos datos, hay que multiplicarlos por 0.114. Por lo general la ponderación se emplea para estimar porcentajes o proporciones, mientras que la expansión se utiliza para estimar conteos simples de la población. 
+
+En el caso específico de las ENAHO, el INEI por lo general utilizar un factor de expansión para cada registro de sus base de datos. Este factor de expansión es una variable de la base de datos que se detalla en la documentación técnica de las encuesta. Cuando un estudio utiliza un factor de expasión o de ponderación en su diseño muestral, éste debe estar claramente indicado en su ficha técnica o documentación. En la base de datos de la ENAHO la variable correspondiente se llama \texttt{FACTOR07}.\footnote{``07'' hace referencia a que los ajustes para la expansión de datos provienen de los datos del censo nacional peruano del 2007.} 
+
+A continuación mostraremos cómo se utiliza el factor de expansión de la ENAHO 2015 para estimar la proporción de hogares que tienen conectado su servicio higiénico a la red pública de desagüe dentro de la vivienda (pregunta 110 y 100B del cuestionario del módulo 1 de la ENAHO).
+
+De acuerdo con la información de la encuesta, hay 17,511 hogares entrevistados que tienen conectado su servicio higiénico a la red pública dentro de la vivienda, lo que representa el 54.4\% de hogares de la muestra.\footnote{En este cálculo se excluyen los hogares que tienen ``valores perdidos'', que suman 7,675 para esta variable en la ENAHO 2015. Para saber los missing values pueden ejecutar el comando: \texttt{prop.table(enaho15\_1\$P11A)}}
+
+<<>>=
+desague1 <- xtabs(~ P111A, data = enaho15_1)
+desague1
+prop.table(desague1)*100
+@
+
+
+
 
 
 \end{document}

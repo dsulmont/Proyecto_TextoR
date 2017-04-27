@@ -1,4 +1,5 @@
 t.out <- as.data.frame(table(genero12$GEDAD))
+
 t.out
 t.out2 <- transform(t.out, Pct = prop.table(Freq)*100)
 t.out2 <- transform(t.out2, FreqCum = cumsum(Freq), PctCum = cumsum(Pct))
