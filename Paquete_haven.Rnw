@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+Importar tabla Excel con paquete readxl
+
+Otra posibilidad para importar tablas en Excel es utilizar el paquete readxl. Este paquete importa directamente la primera hoja activa del libro de Excel como un data frame. Para ello es importante que la primera fila de la hoja contenga los nombres de las variables y que, empezando desde la primera columna, cada columna corresponda a una variable.
+
+<<>>=
+library(readxl)
+Tabla_alumnos <- read_excel("Tabla_alumnos.xlsx")
+Tabla_alumnos
+@
+
+Como se aprecia, los nombres de las variables en el data frame resultante están escritos tal cual figuran en el Excel original. En la última columna el nombre resulta demasiado largo, podemos cambiar los nombres usando el siguiente comando:
+
+<<>>=
+colnames(Tabla_alumnos) <-c("nombre","nota","aprueba","eval_prof")
+Tabla_alumnos
+@
+
+
+
+Importar y exportar datos con el paquete haven
+
+El paquete haven contiene un conjunto de funciones que  nos permite importar y exportar bases de datos entre el R y otros formatos comunes, tales como el SPSS, el STATA y el SAS.
+
+Para importar datos desde el SPSS el comando correspondiente es el siguiente:
+
+<<>>=
+library(haven)
+BD_genero_pe12 <- read_sav("BD_genero_pe12.sav")
+@
+
+A diferencia de la función correspondiente del paquete foreing, cuando se usa la función read\_sav del paquete haven, el data frame correspondiente no importa directamente las etiquetas de los valores de las variables sino únicamente los códigos numéricos. Por otro lado, salvo que se indique lo contrario, los códigos definidos como valores perdidos o "missing values" en el SPSS serán convertidos como NA en el data frame del R.
+
+Para exportar un data frame del R al SPSS el comando correspondiente es:
+
+<<>>=
+library(haven)
+write_sav(Tabla_alumnos, "db_alumnos.sav")
+@
+
+El paquete haven contiene comandos similares para importar y exportar datos desde y hacia STATA y SAS. Para mayor información al respecto, revisar: https://cran.r-project.org/web/packages/haven/haven.pdf
+
+
+\end{document}
