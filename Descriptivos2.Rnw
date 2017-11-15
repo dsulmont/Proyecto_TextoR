@@ -1,0 +1,81 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+Cuando se hace un análisis descriptivo univariable nos interesa responder a dos tipos de preguntas acerca de la distribución de los valores o categorías de nuestras variables de análisis:
+
+\begin{itemize}
+  \item ¿Cuál es la tendencia central de la distribución de la variable?, ¿en torno a qué valores o categorías están concentrados los casos que estamos estudiando?
+  \item ¿Qué tan dispersos están los casos respecto de una variable?, ¿cuál es el grado o nivel de diferencias que existen entre los casos que estamos analizando?
+\end{itemize}
+
+Un conjunto de herramientas que nos permiten responder a estas preguntas son los estadísticos de resumen o estadísticos descriptivos, que consisten en un número que nos permite resumir una característica de la distribución de una variable. Podemos distinguir tres tipos de estadísticos descriptivos:
+
+\begin{itemize}
+  \item Medidas de tendencia central: Moda, Mediana y Media
+  \item Medidas de orden o posición: Cuantiles, Percentiles, Cuartiles
+  \item Medidas de dispersión: Rango, Desviación Estándar y Rango Intercuartil
+\end{itemize}
+
+\section{Estadísticos o medidas de tendencia central}
+
+Indican los valores centrales o alrededor de los cuales se concentra la mayor parte de los casos de una distribución. Los estadísticos de tendencia central son:\\
+
+\emph{La moda (Mo):} Es el valor o la categoría más frecuente de una variable, aplica a cualquier tipo de variables.\\
+
+\emph{La mediana (Md):} Es el valor o categoría que, en una distribución ordenada, divide en dos mitades a una distribución. Aplica sólo para variables ordinales o de intervalo.\\
+
+\emph{La media ($\bar{x}$):} Es la suma de todos los valores una variable, divida por el número de casos. Aplica sólo para variables de intervalo y se calcula mediante la siguiente fórmula:
+
+$$\bar{x} = \frac{\sum_{i=1}^{n}x_{i}}{n}$$
+
+En el R, la moda puede identificarse en una tabla de distribución de frecuencias, por ejemplo, en el caso de la variable ``estado civil'' del entrevistado de la encuesta de Familia y Roles de Género del 2012, la moda sería ``casado/a'', como se aprecia en la siguiente tabla:
+
+<<echo=FALSE>>=
+load("genero12.rda")
+@
+
+<<>>=
+table(genero12$P22)
+@
+
+En el caso de una variable categórica ordinal, la mediana también se puede identificar en una tabla de contingencia, observando las frecuencias acumuladas. En en caso de los datos de la tabla \ref{tab:nivedu2}, la moda es ``secundaria completa'', puesto que la persona que se encuentra en la mitad de la distribución ordenada de esta variable tiene ese nivel educativo.
+
+\begin{table}[htbp]
+\caption{Nivel educativo de los entrevistados}
+\label{tab:nivedu2}
+\begin{center}
+\begin{tabular}{lrrrr}
+  \hline
+Nivel Educativo & Frecuencia & \% & Frec. Acum. & \% Acum. \\ 
+  \hline
+Ninguno &  28 & 2.33 &  28 & 2.33 \\ 
+  Inicial o primaria incompleta &  61 & 5.07 &  89 & 7.40 \\ 
+  Primaria completa & 101 & 8.40 & 190 & 15.81 \\ 
+  Secundaria incompleta & 121 & 10.07 & 311 & 25.87 \\ 
+  Secundaria completa & 353 & 29.37 & 664 & 55.24 \\ 
+  Superior técnica incompleta & 107 & 8.90 & 771 & 64.14 \\ 
+  Superior técnica completa & 158 & 13.14 & 929 & 77.29 \\ 
+  Superior universitaria incompleta & 118 & 9.82 & 1,047 & 87.10 \\ 
+  Superior universitaria completa & 127 & 10.57 & 1,174 & 97.67 \\ 
+  Post grado &  28 & 2.33 & 1,202 & 100.00 \\ 
+   \hline
+   TOTAL & 1,202 & 100.00 & & \\
+   \hline
+\end{tabular}
+\\Fuente: Encuesta Nacional sobre Familia y Roles del Género 2012, IOP-PUCP
+\\Elaboración propia.
+\end{center}
+\end{table}
+
+Cuando se analiza una variable cuantitativa, la mediana puede obtenerse mediante el siguiente comando:
+
+<<>>=
+median(genero12$EDAD, na.rm=T)
+@
+
+
+
+
+\end{document}

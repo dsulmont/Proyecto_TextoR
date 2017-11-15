@@ -1,0 +1,34 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+Cuando se hace un análisis descriptivo univariable nos interesa responder a dos tipos de preguntas acerca de la distribución de los valores o categorías de nuestras variables de análisis:
+
+\begin{itemize}
+  \item ¿Cuál es la tendencia central de la distribución de la variable?, ¿en torno a qué valores o categorías están concentrados los casos que estamos estudiando?
+  \item ¿Qué tan dispersos están los casos respecto de una variable?, ¿cuál es el grado o nivel de diferencias que existen entre los casos que estamos analizando?
+\end{itemize}
+
+Un conjunto de herramientas que nos permiten responder a estas preguntas son los estadísticos de resumen o estadísticos descriptivos, que consisten en un número que nos permite resumir una característica de la distribución de una variable. Podemos distinguir tres tipos de estadísticos descriptivos:
+
+\begin{itemize}
+  \item Medidas de tendencia central: Moda, Mediana y Media
+  \item Medidas de orden o posición: Cuantiles, Percentiles, Cuartiles
+  \item Medidas de dispersión: Rango, Desviación Estándar y Rango Intercuartil
+\end{itemize}
+
+\section{Estadísticos o medidas de tendencia central}
+
+Indican los valores centrales o alrededor de los cuales se concentra la mayor parte de los casos de una distribución.
+
+\emph{La moda (Mo):} Es el valor o la categoría más frecuente de una variable, aplica a cualquier tipo de variables.
+
+
+\emph{La mediana (Md):} Es el valor o categoría que, en una distribución ordenada, divide en dos mitades a una distribución. Aplica sólo para variables ordinales o de intervalo.
+
+\emph{La media ($\bar{x}$):} Es la suma de todos los valores de la variable, divida por el número de casos. Aplica sólo para variables de intervalo y se calcula mediante la siguiente fórmula:
+
+$$\bar{x} = \frac{\sum_{i=1}^{n}x_{i}}{n}$$
+
+\end{document}

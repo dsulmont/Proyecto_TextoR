@@ -129,9 +129,9 @@ TOTAL & 1,203 & 100.00 & & \\
 load("genero12.rda")
 @
 
-El comando \texttt[table] sirve para producir tablas de frecuencias absolutas. Para solicitar una tabla de frecuencias de la variable "estado civil" de la encuesta de Familia y Roles de Género, se emplea la siguiente sintaxis:
+El comando \texttt{table} sirve para producir tablas de frecuencias absolutas. Para solicitar una tabla de frecuencias de la variable "estado civil" de la encuesta de Familia y Roles de Género, se emplea la siguiente sintaxis:
 
-<<results=tex>>=
+<<>>=
 table(genero12$P22)
 @
 
@@ -314,7 +314,7 @@ prop.table(tab_cruz1, 2)*100
 
 Tabmbién es posible llegar al mismo resultado anidando los comandos:
 
-<<echo=F>>=
+<<results=hide>>=
 prop.table(table(genero12$P35C, genero12$SEXO),2)*100
 @
 
@@ -333,7 +333,7 @@ prop.table(tab_cruz1.b, 2)*100
 
 También es posible llegar al mismo resultado con:
 
-<<echo=F>>=
+<<results=hide>>=
 prop.table(xtabs(~ P35C + SEXO, data = genero12),2)*100
 @
 
@@ -349,11 +349,6 @@ Si queremos conocer cuál es la composición por niveles socioeconómicos en cad
 prop.table(xtabs(FACTOR07 ~  DOMINIO + ESTRSOCIAL, data = enaho15_1), 1)*100
 @
 
-
-
-```{r}
-prop.table(xtabs(~ P35C + SEXO, genero12), 2)*100
-```
 
 
 
